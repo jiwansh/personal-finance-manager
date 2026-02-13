@@ -2,192 +2,283 @@
 
 ## Project Overview
 
-This project is a backend application built using Spring Boot that provides APIs for managing personal finances. It supports user authentication, transaction management, category management, savings goals tracking, and financial reports.
+This project is a backend application built using Spring Boot that provides REST APIs for managing personal finances.
+It supports user authentication, category management, transaction tracking, savings goals, and financial reports.
 
-The system follows a layered architecture and implements proper exception handling, validation, and unit testing as required for the Backend Intern assignment.
+The application follows a layered architecture and includes validation, global exception handling, unit testing, and Docker-based deployment.
 
+This project has been developed as part of a Backend Intern assignment.
 
-## Technology Stack
+## Tech Stack
 
-* Java 17
-* Spring Boot 3
-* Spring Security (Session-based authentication)
-* Spring Data JPA
-* H2 Database (for local development)
-* Maven
-* JUnit and Mockito for testing
+Java 17
+Spring Boot 3
+Spring Security (Session-based authentication)
+Spring Data JPA
+H2 Database (local development)
+Maven
+JUnit and Mockito (Unit Testing)
+Docker
+Render (Deployment)
 
+## Live Deployment
 
-## Setup Instructions
+Base URL:
+[https://personal-finance-manager-iz5m.onrender.com](https://personal-finance-manager-iz5m.onrender.com)
+
+Note:
+The application is deployed on Render free tier.
+The first request may take 30–60 seconds to wake the server.
+
+## Running Locally
 
 ### Prerequisites
 
-* Java 17 installed
-* Maven installed
-* IntelliJ IDEA or any Java IDE
+Java 17 installed
+Maven installed
+IntelliJ IDEA or any Java IDE
 
-### Steps to Run Locally
+### Steps
 
-1. Clone the repository
-2. Open project in IntelliJ IDEA
-3. Run the application
+Clone repository:
 
-Command:
+git clone [https://github.com/jiwansh/personal-finance-manager.git](https://github.com/jiwansh/personal-finance-manager.git)
+
+Open project in IDE and run:
+
 mvn spring-boot:run
 
-Application will start at:
-http://localhost:8080
+Application runs at:
 
-### H2 Database Console
+[http://localhost:8080](http://localhost:8080)
 
-http://localhost:8080/h2-console
+## H2 Database Console (Local)
+
+URL:
+[http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 
 JDBC URL:
 jdbc:h2:mem:finance_db
+
 Username: sa
 Password: (leave empty)
 
+## Authentication
+
+The application uses session-based authentication with Spring Security.
+
+After successful login, a session cookie (JSESSIONID) is generated.
+All protected APIs must be called using the same session.
+
+## API Testing
+
+APIs can be tested using Postman or curl.
+
+### Base URLs
+
+Local:
+[http://localhost:8080/api](http://localhost:8080/api)
+
+Hosted:
+[https://personal-finance-manager-iz5m.onrender.com/api](https://personal-finance-manager-iz5m.onrender.com/api)
 
 ## Authentication APIs
 
 ### Register User
 
-POST /api/auth/register
+POST ```/api/auth/register```
 
 Request Body:
+```json
 {
-"username": "[user@gmail.com](mailto:user@gmail.com)",
-"password": "123",
-"fullName": "Test User",
-"phoneNumber": "9999999999"
+  "username": "user@gmail.com",
+  "password": "1234",
+  "fullName": "Test User",
+  "phoneNumber": "9999999999"
 }
+```
 
 ### Login User
 
-POST /api/auth/login
+POST ```/api/auth/login```
 
 Request Body:
+```json
 {
-"username": "[user@gmail.com](mailto:user@gmail.com)",
-"password": "123"
+"username": "user@gmail.com",
+"password": "1234"
 }
+```
 
-After login, a session cookie is generated and must be used for authenticated APIs.
 
----
+After login, session cookie will be used automatically by Postman.
 
 ## Category APIs
 
-GET /api/categories
-Fetch all default and custom categories
+### Get Categories
 
-POST /api/categories
-Create a custom category
+GET ```/api/categories```
+
+Returns default and custom categories.
+
+### Create Category
+
+POST ```/api/categories```
 
 Request Body:
+```json
 {
 "name": "Freelance",
 "type": "INCOME"
 }
+```
 
-DELETE /api/categories/{name}
-Delete a custom category
+### Delete Category
 
+DELETE ```/api/categories/{name}```
 
 ## Transaction APIs
 
-POST /api/transactions
-Create transaction
+### Add Transaction
 
-GET /api/transactions
-Get all user transactions
+POST ```/api/transactions```
+Request Body:
+```json
+{
+"amount": 5000,
+"date": "2024-06-15",
+"category": "Salary",
+"description": "Salary credited"
+}
+```
+### Get All Transactions
 
-PUT /api/transactions/{id}
-Update transaction
+GET ```/api/transactions```
 
-DELETE /api/transactions/{id}
-Delete transaction
+### Update Transaction
 
+PUT ```/api/transactions/{id}```
+
+Request Body:
+```json
+{
+"amount": 3000,
+"category": "Food",
+"description": "Updated entry"
+}
+```
+
+
+### Delete Transaction
+
+DELETE ```/api/transactions/{id}```
 
 ## Savings Goal APIs
 
-POST /api/goals
-Create savings goal
+### Create Goal
 
-GET /api/goals
-Get goals with progress tracking
+POST ```/api/goals```
 
-Progress is calculated as:
-Total income minus total expense since goal start date.
+Request Body:
+```json
+{
+"goalName": "Buy Laptop",
+"targetAmount": 100000,
+"targetDate": "2026-12-31"
+}
+```
 
+
+### Get Goals with Progress
+
+GET ```/api/goals```
+
+Progress is calculated as total income minus total expenses since goal start date.
 
 ## Reports APIs
 
-Monthly Report:
-GET /api/reports/monthly/{year}/{month}
+### Monthly Report
 
-Yearly Report:
-GET /api/reports/yearly/{year}
+GET ```/api/reports/monthly/{year}/{month}```
 
-Reports include:
+Example:
+GET ```/api/reports/monthly/2026/2```
 
-* Total income by category
-* Total expenses by category
-* Net savings
+Returns:
 
+* total income by category
+* total expenses by category
+* net savings
 
-## Testing
+### Yearly Report
 
-Unit testing implemented using:
+GET 
+```/api/reports/yearly/{year}```
 
-* JUnit
-* Mockito
+## Unit Testing
 
-To run tests:
-mvn test
+Unit tests are implemented using:
 
-Service layer testing implemented with mocked repositories to isolate business logic.
+JUnit
+Mockito
 
+Service layer testing is done by mocking repository dependencies to isolate business logic.
 
+Run tests using:
+
+```mvn test```
+
+Test coverage focuses on service layer validation and exception handling.
 
 ## Architecture
 
-Layered architecture followed:
+Layered architecture is followed to maintain separation of concerns and scalability.
 
-Controller Layer
-Handles HTTP requests and responses.
+- **Controller Layer**
+    - Handles HTTP requests and responses
+    - Validates input data
+    - Sends structured API responses
 
-Service Layer
-Contains business logic and validations.
+- **Service Layer**
+    - Contains core business logic
+    - Performs validations and calculations
+    - Coordinates between controller and repository layers
 
-Repository Layer
-Handles database interaction using Spring Data JPA.
+- **Repository Layer**
+    - Handles database operations using Spring Data JPA
+    - Performs CRUD operations
+    - Executes custom queries for reports and calculations
 
-DTO Pattern
-Used for request and response separation from entities.
+- **DTO Pattern**
+    - Separates request and response models from entities
+    - Prevents direct exposure of database entities
+    - Improves API structure and maintainability
 
-Global Exception Handling
-Implemented using @ControllerAdvice to return proper HTTP status codes.
+- **Global Exception Handling**
+    - Implemented using `@ControllerAdvice`
+    - Returns proper HTTP status codes
+    - Provides consistent error responses across APIs
 
+## Deployment
+
+* Application is containerized using Docker and deployed on Render.
+
+* Docker is used to ensure consistent environment across systems and simplify deployment.
 
 ## Design Decisions
 
 * Session-based authentication implemented using Spring Security.
 * Custom exception classes used for proper HTTP status handling.
 * Default categories provided for income and expense tracking.
-* Transactions are permanently deleted to ensure reports remain accurate.
-* H2 database used for simplicity and quick setup.
-
+* Transactions are permanently stored for accurate reporting.
+* H2 database used for simplicity in assignment setup.
+* Docker used for deployment consistency.
 
 ## Future Improvements
 
 * JWT-based authentication
-* Pagination and sorting
-* Docker deployment
-* Frontend integration
+* Pagination and filtering
+* PostgreSQL database integration
+* Frontend integration (React)
 * Advanced analytics and charts
 
-
-## Author
-
-Jiwanshu

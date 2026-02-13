@@ -25,11 +25,25 @@ public class TransactionController {
         return transactionService.createTransaction(request, userId);
     }
     @GetMapping
-    public List<Transaction> getAllTransactions(HttpSession session){
+    public List<Transaction> getTransactions(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            HttpSession session){
 
         Long userId = (Long) session.getAttribute("userId");
+
+        if(category != null){
+            return transactionService.getByCategory(userId, category);
+        }
+
+        if(startDate != null && endDate != null){
+            return transactionService.getByDateRange(userId, startDate, endDate);
+        }
+
         return transactionService.getAllTransactions(userId);
     }
+
 
     @PutMapping("/{id}")
     public Transaction updateTransaction(@PathVariable Long id,

@@ -13,12 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import com.syfe.finance_manager.dto.LoginRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import java.util.Collections;
 import com.syfe.finance_manager.config.CustomUserDetails;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-
 
 
 @RestController

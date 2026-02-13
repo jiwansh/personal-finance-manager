@@ -30,4 +30,10 @@ public class GoalController {
         Long userId = (Long) session.getAttribute("userId");
         return goalService.getGoals(userId);
     }
+    @DeleteMapping("/{id}")
+    public String deleteGoal(@PathVariable Long id, HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        return goalService.deleteGoal(id, userId);
+    }
+
 }

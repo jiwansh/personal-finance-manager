@@ -3,6 +3,8 @@ package com.syfe.finance_manager.service;
 import com.syfe.finance_manager.dto.CreateGoalRequest;
 import com.syfe.finance_manager.dto.GoalResponse;
 import com.syfe.finance_manager.entity.Goal;
+import com.syfe.finance_manager.exception.ForbiddenException;
+import com.syfe.finance_manager.exception.NotFoundException;
 import com.syfe.finance_manager.repository.GoalRepository;
 import com.syfe.finance_manager.repository.TransactionRepository;
 
@@ -21,7 +23,7 @@ public class GoalService {
     private final GoalRepository goalRepository;
     private final TransactionRepository transactionRepository;
 
-    // 🔵 CREATE GOAL
+    // CREATE GOAL
     public Goal createGoal(CreateGoalRequest request, Long userId){
 
         LocalDate targetDate = LocalDate.parse(request.getTargetDate());
@@ -42,7 +44,7 @@ public class GoalService {
         return goalRepository.save(goal);
     }
 
-    // 🔵 GET GOALS WITH PROGRESS
+    // GET GOALS WITH PROGRESS
     public List<GoalResponse> getGoals(Long userId){
 
         List<Goal> goals = goalRepository.findByUserId(userId);
@@ -50,18 +52,20 @@ public class GoalService {
         return goals.stream().map(goal -> {
 
             double income = transactionRepository
-                    .getTotalIncome(userId, goal.getStartDate());
+                    .getTotalIncomeAfterDate(userId, goal.getStartDate());
 
             double expense = transactionRepository
-                    .getTotalExpense(userId, goal.getStartDate());
+                    .getTotalExpenseAfterDate(userId, goal.getStartDate());
 
             double progress = income - expense;
+            if(progress < 0) progress = 0;
 
             double percentage = (progress / goal.getTargetAmount()) * 100;
             if(percentage < 0) percentage = 0;
 
             double remaining = goal.getTargetAmount() - progress;
             if(remaining < 0) remaining = 0;
+
 
             return new GoalResponse(
                     goal.getId(),
@@ -73,4 +77,19 @@ public class GoalService {
             );
         }).toList();
     }
+    //Delete Goals
+    public String deleteGoal(Long goalId, Long userId){
+
+        Goal goal = goalRepository.findById(goalId)
+                .orElseThrow(() -> new NotFoundException("Goal not found"));
+
+        if(!goal.getUserId().equals(userId)){
+            throw new ForbiddenException("You cannot access this goal");
+        }
+
+        goalRepository.delete(goal);
+
+        return "Goal deleted successfully";
+    }
+
 }

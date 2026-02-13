@@ -35,4 +35,9 @@ public class Transaction {
         INCOME,
         EXPENSE
     }
+
+    public String getAmount(){
+        return String.format("%.2f", amount);
+    }
+
 }

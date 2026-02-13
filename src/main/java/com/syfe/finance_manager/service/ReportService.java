@@ -43,6 +43,10 @@ public class ReportService {
         }
 
         double netSavings = totalIncome - totalExpense;
+        if(netSavings < 0) netSavings = 0;
+
+        String.format("%.2f", netSavings);
+
 
         Map<String,Object> result = new HashMap<>();
         result.put("year", year);

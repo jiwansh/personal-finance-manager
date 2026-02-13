@@ -24,7 +24,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
 
-    // 🔵 CREATE TRANSACTION
+    // CREATE TRANSACTION
     public Transaction createTransaction(CreateTransactionRequest request, Long userId){
 
         LocalDate date = LocalDate.parse(request.getDate());
@@ -52,12 +52,26 @@ public class TransactionService {
         return transactionRepository.save(tx);
     }
 
-    // 🔵 GET ALL
+    // GET ALL
     public List<Transaction> getAllTransactions(Long userId){
         return transactionRepository.findByUserIdOrderByDateDesc(userId);
     }
+    public List<Transaction> getByCategory(Long userId, String category){
+        return transactionRepository
+                .findByUserIdAndCategoryOrderByDateDesc(userId, category);
+    }
 
-    // 🔵 UPDATE
+    public List<Transaction> getByDateRange(Long userId, String start, String end){
+
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+
+        return transactionRepository
+                .findByUserIdAndDateBetweenOrderByDateDesc(userId, startDate, endDate);
+    }
+
+
+    // UPDATE
     public Transaction updateTransaction(Long id,
                                          UpdateTransactionRequest request,
                                          Long userId){
@@ -94,7 +108,7 @@ public class TransactionService {
         return transactionRepository.save(tx);
     }
 
-    // 🔵 DELETE
+    // DELETE
     public String deleteTransaction(Long id, Long userId){
 
         Transaction tx = transactionRepository.findById(id)
