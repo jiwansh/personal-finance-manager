@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -45,10 +46,13 @@ public class TransactionServiceTest {
         when(categoryRepository.findByNameAndUserId("Salary",1L))
                 .thenReturn(Optional.of(cat));
 
-        when(transactionRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(transactionRepository.save(any()))
+                .thenAnswer(i -> i.getArgument(0));
 
         var tx = transactionService.createTransaction(req,1L);
 
-        assertEquals(5000, tx.getAmount());
+        // FIXED ASSERTION
+        assertEquals(0,
+                tx.getAmount().compareTo(String.valueOf(new BigDecimal("5000.00"))));
     }
 }
