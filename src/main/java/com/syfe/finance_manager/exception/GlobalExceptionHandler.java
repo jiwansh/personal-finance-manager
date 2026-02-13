@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -37,6 +38,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(toBody(HttpStatus.FORBIDDEN, ex.getMessage()), HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex){
+        return new ResponseEntity<>(toBody(HttpStatus.UNAUTHORIZED, ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(javax.security.sasl.AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuth(javax.security.sasl.AuthenticationException ex){
         return new ResponseEntity<>(toBody(HttpStatus.UNAUTHORIZED, ex.getMessage()), HttpStatus.UNAUTHORIZED);
@@ -54,6 +60,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraint(ConstraintViolationException ex){
         return new ResponseEntity<>(toBody(HttpStatus.BAD_REQUEST, ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ErrorResponse> handleDateTimeParse(DateTimeParseException ex){
+        return new ResponseEntity<>(toBody(HttpStatus.BAD_REQUEST, "Invalid date format. Use yyyy-MM-dd"), HttpStatus.BAD_REQUEST);
     }
 
     // fallback - for unexpected errors (should be rare)

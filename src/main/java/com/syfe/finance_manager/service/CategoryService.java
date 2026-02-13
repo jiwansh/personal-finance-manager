@@ -10,6 +10,7 @@ import com.syfe.finance_manager.exception.NotFoundException;
 import com.syfe.finance_manager.exception.ForbiddenException;
 import com.syfe.finance_manager.exception.BadRequestException;
 
+import com.syfe.finance_manager.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final TransactionRepository transactionRepository;
 
     // GET ALL
     public List<CategoryResponse> getCategories(Long userId){
@@ -69,6 +71,10 @@ public class CategoryService {
         if(!category.isCustom()){
             throw new ForbiddenException("Default category cannot be deleted");
         }
+        if (transactionRepository.countByUserIdAndCategory(userId, name) > 0) {
+            throw new ConflictException("Category is in use by transactions");
+        }
+
 
         categoryRepository.delete(category);
 

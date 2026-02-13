@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -27,7 +28,16 @@ public class TransactionService {
     // CREATE TRANSACTION
     public Transaction createTransaction(CreateTransactionRequest request, Long userId){
 
-        LocalDate date = LocalDate.parse(request.getDate());
+        if (request.getAmount() <= 0) {
+            throw new BadRequestException("Amount must be greater than zero");
+        }
+
+        LocalDate date;
+        try {
+            date = LocalDate.parse(request.getDate());
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException("Invalid date format. Use yyyy-MM-dd");
+        }
 
         if(date.isAfter(LocalDate.now())){
             throw new BadRequestException("Future date not allowed");

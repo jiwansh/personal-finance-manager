@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-
     List<Transaction> findByUserIdOrderByDateDesc(Long userId);
 
     // MONTHLY INCOME (ignoring negative & zero)
@@ -45,6 +44,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByUserIdAndCategoryOrderByDateDesc(Long userId, String category);
 
+    long countByUserIdAndCategory(Long userId, String category);
+
     List<Transaction> findByUserIdAndDateBetweenOrderByDateDesc(Long userId,
                                                                 LocalDate start,
                                                                 LocalDate end);
@@ -59,4 +60,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "WHERE t.userId=:userId AND t.type='EXPENSE' AND t.amount>0 AND t.date>=:date")
     Double getTotalExpenseAfterDate(@Param("userId") Long userId,
                                     @Param("date") LocalDate date);
+
+    // Get all income/expense for goal progress (no date filter)
+    @Query("SELECT COALESCE(SUM(t.amount),0) FROM Transaction t " +
+            "WHERE t.userId=:userId AND t.type='INCOME' AND t.amount>0")
+    Double getTotalIncome(@Param("userId") Long userId);
+
+    @Query("SELECT COALESCE(SUM(t.amount),0) FROM Transaction t " +
+            "WHERE t.userId=:userId AND t.type='EXPENSE' AND t.amount>0")
+    Double getTotalExpense(@Param("userId") Long userId);
 }
